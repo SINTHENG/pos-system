@@ -115,10 +115,10 @@ export default function PosPage() {
   }
 
   return (
-    <div className="grid h-full gap-4 lg:grid-cols-[1fr_380px]">
+    <div className="grid h-full min-h-0 gap-4 lg:grid-cols-[1fr_380px]">
       {/* Product area */}
       <section className="flex min-h-0 flex-col">
-        <div className="mb-3 flex flex-wrap gap-3">
+        <div className="mb-3 flex flex-shrink-0 flex-wrap gap-3">
           <div className="relative min-w-52 flex-1">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
             <Input
@@ -131,7 +131,7 @@ export default function PosPage() {
             />
           </div>
         </div>
-        <div className="mb-3 flex gap-2 overflow-x-auto pb-1">
+        <div className="mb-3 flex flex-shrink-0 gap-2 overflow-x-auto pb-1">
           {[{ id: "", name: "All" }, ...categories.items].map((c) => (
             <button
               key={c.id}
@@ -189,7 +189,7 @@ export default function PosPage() {
 
       {/* Cart */}
       <aside className="flex min-h-0 flex-col rounded-2xl border border-border bg-card p-4 shadow-sm">
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 flex flex-shrink-0 items-center justify-between">
           <h2 className="flex items-center gap-2 font-semibold"><ShoppingCart size={18} /> Current order</h2>
           <button
             disabled={cart.lines.length === 0}
@@ -200,14 +200,14 @@ export default function PosPage() {
           </button>
         </div>
 
-        <div className="mb-3 flex gap-2">
+        <div className="mb-3 flex flex-shrink-0 gap-2">
           <Select value={cart.customerId} onChange={(e) => cart.setCustomer(e.target.value)}>
             {customers.items.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </Select>
           <Button variant="outline" aria-label="New customer" onClick={() => setNewCustomer(true)}><UserPlus size={16} /></Button>
         </div>
 
-        <div className="min-h-32 flex-1 space-y-2 overflow-y-auto">
+        <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
           {cart.lines.length === 0 && (
             <div className="flex h-full flex-col items-center justify-center gap-2 text-sm text-muted">
               <ShoppingCart /> Cart is empty
@@ -231,7 +231,7 @@ export default function PosPage() {
           ))}
         </div>
 
-        <div className="mt-3 space-y-3 border-t border-border pt-3 text-sm">
+        <div className="mt-3 flex-shrink-0 space-y-3 border-t border-border pt-3 text-sm">
           <div className="flex items-center gap-2">
             <span className="text-muted">Discount</span>
             <Input

@@ -6,6 +6,7 @@ import { NAV_ITEMS } from "@/constants/navigation";
 import { useAuthStore } from "@/store/auth-store";
 import { Sidebar } from "@/components/sidebar/sidebar";
 import { Navbar } from "@/components/navbar/navbar";
+import { cn } from "@/lib/utils";
 
 /** Client-side guard: redirects to /login when signed out and enforces role-based routes. */
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -30,19 +31,25 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [hydrated, user, pathname, router]);
 
   const isReady = hydrated && !!user;
+  const isPos = pathname === "/pos";
 
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Navbar />
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <main
+          className={cn(
+            "flex-1 p-4 lg:p-6 min-h-0",
+            isPos ? "overflow-hidden" : "overflow-y-auto"
+          )}
+        >
           {!isReady ? (
             <div className="flex h-64 items-center justify-center text-sm text-muted">
               Loading...
             </div>
           ) : null}
-          <div className={!isReady ? "hidden" : undefined}>{children}</div>
+          <div className={cn("h-full min-h-0", !isReady && "hidden")}>{children}</div>
         </main>
       </div>
     </div>
