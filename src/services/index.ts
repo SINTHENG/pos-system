@@ -6,6 +6,7 @@ import {
   mockOrders,
   mockProducts,
   mockPurchases,
+  mockShifts,
   mockStockMovements,
   mockSuppliers,
 } from "@/lib/mock-data";
@@ -16,6 +17,7 @@ import type {
   Order,
   Product,
   Purchase,
+  StaffShift,
   StockMovement,
   Supplier,
 } from "@/types";
@@ -27,6 +29,7 @@ export const supplierService = createCrudService<Supplier>("suppliers", mockSupp
 export const employeeService = createCrudService<Employee>("employees", mockEmployees, "emp");
 export const orderService = createCrudService<Order>("orders", mockOrders, "ORD");
 export const purchaseService = createCrudService<Purchase>("purchases", mockPurchases, "PO");
+export const shiftService = createCrudService<StaffShift>("shifts", mockShifts, "shift");
 export const stockMovementService = createCrudService<StockMovement>(
   "stock-movements",
   mockStockMovements,

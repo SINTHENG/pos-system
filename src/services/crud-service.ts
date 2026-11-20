@@ -50,7 +50,7 @@ export function createCrudService<T extends { id: string }>(
     async create(input) {
       if (USE_MOCK) {
         await delay();
-        const item = { ...input, id: uid(idPrefix) } as T;
+        const item = { ...input, id: (input as { id?: string }).id || uid(idPrefix) } as T;
         db = [item, ...db];
         return item;
       }

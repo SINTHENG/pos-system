@@ -15,6 +15,8 @@ const DEMO_USERS: Record<string, User> = {
   "admin@pos.example": { id: "emp_1", name: "Sim Sintheng", email: "admin@pos.example", role: "ADMIN" },
   "manager@pos.example": { id: "emp_2", name: "Chenda Pich", email: "manager@pos.example", role: "MANAGER" },
   "cashier@pos.example": { id: "emp_3", name: "Vanna Heng", email: "cashier@pos.example", role: "CASHIER" },
+  "staff1@pos.example": { id: "staff_1", name: "Staff 1", email: "staff1@pos.example", role: "CASHIER" },
+  "staff2@pos.example": { id: "staff_2", name: "Staff 2", email: "staff2@pos.example", role: "CASHIER" },
 };
 
 export const useAuthStore = create<AuthState>()(

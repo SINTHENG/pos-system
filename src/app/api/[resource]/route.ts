@@ -64,17 +64,42 @@ export async function POST(req: Request, { params }: { params: Promise<{ resourc
     const table = getTableName(resource);
     const supabase = getSupabaseServerClient();
 
-    const { data: created, error } = await supabase
+    const insertDoc: Record<string, unknown> = { ...doc };
+    // sequenceNumber is computed in frontend for display, not a database column
+    delete insertDoc.sequenceNumber;
+
+    let { data: created, error } = await supabase
       .from(table)
-      .insert([doc])
+      .insert([insertDoc])
       .select()
       .maybeSingle();
 
+    // If a column does not exist in the database, strip it iteratively and retry
+    let retries = 0;
+    while (error && retries < 4 && (error.message.includes("does not exist") || error.code === "42703")) {
+      retries++;
+      const match = error.message.match(/column "([^"]+)" of relation/i);
+      if (match && match[1] && match[1] in insertDoc) {
+        console.warn(`Stripping unmapped column "${match[1]}" from ${table} insert`);
+        delete insertDoc[match[1]];
+        const retryResult = await supabase
+          .from(table)
+          .insert([insertDoc])
+          .select()
+          .maybeSingle();
+        created = retryResult.data;
+        error = retryResult.error;
+      } else {
+        break;
+      }
+    }
+
     if (error) {
+      console.error(`Failed to insert into ${table}:`, error.message);
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(created ?? doc, { status: 201 });
+    return NextResponse.json(created ? { ...doc, ...created } : doc, { status: 201 });
   } catch (e) {
     return fail(e);
   }

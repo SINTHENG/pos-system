@@ -9,6 +9,6 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   );
 }
 
-export function CardTitle({ children }: { children: React.ReactNode }) {
-  return <h3 className="mb-4 text-sm font-semibold">{children}</h3>;
+export function CardTitle({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <h3 className={cn("mb-4 text-sm font-semibold", className)}>{children}</h3>;
 }

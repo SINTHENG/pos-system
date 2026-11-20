@@ -6,6 +6,7 @@ import {
   mockOrders,
   mockProducts,
   mockPurchases,
+  mockShifts,
   mockStockMovements,
   mockSuppliers,
 } from "@/lib/mock-data";
@@ -20,6 +21,7 @@ export const RESOURCES: Record<string, { seed: { id: string }[] }> = {
   orders: { seed: mockOrders },
   purchases: { seed: mockPurchases },
   "stock-movements": { seed: mockStockMovements },
+  shifts: { seed: mockShifts },
 };
 
 const TABLE_MAP: Record<string, string> = {
@@ -32,6 +34,7 @@ export function getTableName(resource: string): string {
 
 export const ORDER_COLUMNS: Record<string, string> = {
   orders: "createdAt",
+  shifts: "openedAt",
   "stock-movements": "createdAt",
   customers: "createdAt",
   purchases: "createdAt",

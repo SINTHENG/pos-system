@@ -5,6 +5,8 @@ import type {
   Order,
   Product,
   Purchase,
+  StaffMember,
+  StaffShift,
   StockMovement,
   Supplier,
 } from "@/types";
@@ -72,16 +74,78 @@ export const mockSuppliers: Supplier[] = [
   { id: "sup_3", name: "HomeCare Supply", contactPerson: "Bopha Ly", email: "info@homecare.example", phone: "+855 23 777 888", address: "Phnom Penh" },
 ];
 
+export const mockStaff: StaffMember[] = [
+  { id: "staff_1", name: "Staff 1", email: "staff1@pos.example", role: "CASHIER", color: "indigo" },
+  { id: "staff_2", name: "Staff 2", email: "staff2@pos.example", role: "CASHIER", color: "emerald" },
+];
+
+export const mockShifts: StaffShift[] = [
+  {
+    id: "shift_101",
+    staffId: "staff_1",
+    staffName: "Staff 1",
+    openedAt: "2026-11-19T08:00:00.000Z",
+    closedAt: "2026-11-19T14:00:00.000Z",
+    status: "CLOSED",
+    startingCash: 100,
+    endingCash: 385.5,
+    notes: "Morning shift - completed smoothly",
+    totalSales: 285.5,
+    totalOrders: 18,
+  },
+  {
+    id: "shift_102",
+    staffId: "staff_2",
+    staffName: "Staff 2",
+    openedAt: "2026-11-19T14:00:00.000Z",
+    closedAt: "2026-11-19T21:00:00.000Z",
+    status: "CLOSED",
+    startingCash: 100,
+    endingCash: 442.2,
+    notes: "Evening shift - high volume",
+    totalSales: 342.2,
+    totalOrders: 22,
+  },
+  {
+    id: "shift_103",
+    staffId: "staff_1",
+    staffName: "Staff 1",
+    openedAt: new Date(Date.now() - 4 * 3600 * 1000).toISOString(),
+    closedAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
+    status: "CLOSED",
+    startingCash: 100,
+    endingCash: 310.0,
+    notes: "Today early shift",
+    totalSales: 210.0,
+    totalOrders: 14,
+  },
+  {
+    id: "shift_104",
+    staffId: "staff_2",
+    staffName: "Staff 2",
+    openedAt: new Date(Date.now() - 40 * 60 * 1000).toISOString(),
+    status: "OPEN",
+    startingCash: 100,
+    endingCash: 0,
+    notes: "Active on register",
+    totalSales: 94.5,
+    totalOrders: 6,
+  },
+];
+
 export const mockEmployees: Employee[] = [
   { id: "emp_1", name: "Sim Sintheng", email: "admin@pos.example", phone: "+855 12 000 001", role: "ADMIN", active: true, hiredAt: "2025-01-15T00:00:00Z" },
   { id: "emp_2", name: "Chenda Pich", email: "manager@pos.example", phone: "+855 12 000 002", role: "MANAGER", active: true, hiredAt: "2025-05-01T00:00:00Z" },
-  { id: "emp_3", name: "Vanna Heng", email: "cashier@pos.example", phone: "+855 12 000 003", role: "CASHIER", active: true, hiredAt: "2025-09-20T00:00:00Z" },
+  { id: "staff_1", name: "Staff 1", email: "staff1@pos.example", phone: "+855 12 000 003", role: "CASHIER", active: true, hiredAt: "2025-09-20T00:00:00Z" },
+  { id: "staff_2", name: "Staff 2", email: "staff2@pos.example", phone: "+855 12 000 004", role: "CASHIER", active: true, hiredAt: "2025-10-01T00:00:00Z" },
 ];
 
 const methods = ["CASH", "CARD", "QR"] as const;
 const statuses = ["COMPLETED", "COMPLETED", "COMPLETED", "PENDING", "CANCELLED", "REFUNDED"] as const;
 
 export const mockOrders: Order[] = Array.from({ length: 90 }, (_, i) => {
+  const seq = i + 1;
+  const seqStr = String(seq).padStart(3, "0");
   const a = mockProducts[(i * 3) % mockProducts.length];
   const b = mockProducts[(i * 5 + 2) % mockProducts.length];
   const qa = (i % 3) + 1;
@@ -90,12 +154,20 @@ export const mockOrders: Order[] = Array.from({ length: 90 }, (_, i) => {
   const discount = i % 7 === 0 ? +(subtotal * 0.1).toFixed(2) : 0;
   const tax = +((subtotal - discount) * 0.1).toFixed(2);
   const status = statuses[i % statuses.length];
-  const date = new Date("2026-11-04T09:00:00Z");
-  date.setHours(date.getHours() - i * 26);
+  const date = new Date(Date.now() - (89 - i) * 3600 * 1000 * 4); // Spread across recent days up to today
+  const isStaff1 = i % 2 === 0;
+  const cashierId = isStaff1 ? "staff_1" : "staff_2";
+  const cashierName = isStaff1 ? "Staff 1" : "Staff 2";
+  const shiftId = i < 20 ? "shift_101" : i < 50 ? "shift_102" : i < 80 ? "shift_103" : "shift_104";
+
   return {
-    id: `ORD-${String(1001 + i)}`,
+    id: `ORD-${seqStr}`,
+    orderNumber: `#${seqStr}`,
+    sequenceNumber: seq,
     customerId: mockCustomers[i % mockCustomers.length].id,
-    cashierId: "emp_3",
+    cashierId,
+    cashierName,
+    shiftId,
     items: [
       { productId: a.id, name: a.name, price: a.sellingPrice, quantity: qa },
       { productId: b.id, name: b.name, price: b.sellingPrice, quantity: qb },

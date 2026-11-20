@@ -56,6 +56,30 @@ export interface Employee {
   hiredAt: string;
 }
 
+export interface StaffMember {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  color?: string;
+}
+
+export type ShiftStatus = "OPEN" | "CLOSED";
+
+export interface StaffShift {
+  id: string;
+  staffId: string;
+  staffName: string;
+  openedAt: string;
+  closedAt?: string;
+  status: ShiftStatus;
+  startingCash?: number;
+  endingCash?: number;
+  notes?: string;
+  totalSales?: number;
+  totalOrders?: number;
+}
+
 export type PaymentMethod = "CASH" | "CARD" | "QR";
 export type OrderStatus = "PENDING" | "COMPLETED" | "CANCELLED" | "REFUNDED";
 export type PaymentStatus = "PAID" | "UNPAID" | "REFUNDED";
@@ -69,8 +93,12 @@ export interface OrderItem {
 
 export interface Order {
   id: string;
+  orderNumber?: string;
+  sequenceNumber?: number;
   customerId?: string;
   cashierId: string;
+  cashierName?: string;
+  shiftId?: string;
   items: OrderItem[];
   subtotal: number;
   discount: number;

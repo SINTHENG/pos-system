@@ -66,8 +66,11 @@ CREATE TABLE IF NOT EXISTS employees (
 -- 7. Orders
 CREATE TABLE IF NOT EXISTS orders (
   id TEXT PRIMARY KEY,
+  "orderNumber" TEXT,
   "customerId" TEXT,
   "cashierId" TEXT,
+  "cashierName" TEXT,
+  "shiftId" TEXT,
   items JSONB NOT NULL DEFAULT '[]'::jsonb,
   subtotal NUMERIC NOT NULL DEFAULT 0,
   discount NUMERIC NOT NULL DEFAULT 0,
@@ -80,9 +83,30 @@ CREATE TABLE IF NOT EXISTS orders (
 );
 
 CREATE INDEX IF NOT EXISTS idx_orders_customer ON orders("customerId");
+CREATE INDEX IF NOT EXISTS idx_orders_cashier ON orders("cashierId");
+CREATE INDEX IF NOT EXISTS idx_orders_shift ON orders("shiftId");
 CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders("createdAt" DESC);
 
--- 8. Purchases
+-- 8. Staff Shifts
+CREATE TABLE IF NOT EXISTS shifts (
+  id TEXT PRIMARY KEY,
+  "staffId" TEXT NOT NULL,
+  "staffName" TEXT NOT NULL,
+  "openedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  "closedAt" TIMESTAMPTZ,
+  status TEXT NOT NULL DEFAULT 'OPEN',
+  "startingCash" NUMERIC DEFAULT 0,
+  "endingCash" NUMERIC DEFAULT 0,
+  notes TEXT,
+  "totalSales" NUMERIC DEFAULT 0,
+  "totalOrders" INTEGER DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_shifts_staff ON shifts("staffId");
+CREATE INDEX IF NOT EXISTS idx_shifts_status ON shifts(status);
+CREATE INDEX IF NOT EXISTS idx_shifts_opened_at ON shifts("openedAt" DESC);
+
+-- 9. Purchases
 CREATE TABLE IF NOT EXISTS purchases (
   id TEXT PRIMARY KEY,
   "supplierId" TEXT,
@@ -118,6 +142,7 @@ ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE suppliers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE employees ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shifts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE purchases ENABLE ROW LEVEL SECURITY;
 ALTER TABLE stock_movements ENABLE ROW LEVEL SECURITY;
 
@@ -139,6 +164,9 @@ CREATE POLICY "Allow all for employees" ON employees FOR ALL USING (true) WITH C
 
 DROP POLICY IF EXISTS "Allow all for orders" ON orders;
 CREATE POLICY "Allow all for orders" ON orders FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow all for shifts" ON shifts;
+CREATE POLICY "Allow all for shifts" ON shifts FOR ALL USING (true) WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Allow all for purchases" ON purchases;
 CREATE POLICY "Allow all for purchases" ON purchases FOR ALL USING (true) WITH CHECK (true);

@@ -17,7 +17,11 @@ export function Receipt({ order, customer, settings }: { order: Order; customer?
         {settings.receiptHeader && <p className="mt-1">{settings.receiptHeader}</p>}
       </div>
       <hr className="my-2 border-dashed border-black" />
-      <p>Order: {order.id}</p>
+      <p className="font-bold">
+        Order: {order.orderNumber ? `${order.orderNumber} (${order.id})` : order.id}
+      </p>
+      <p>Cashier: {order.cashierName ?? order.cashierId}</p>
+      {order.shiftId && <p className="text-[10px] text-gray-600">Shift: {order.shiftId}</p>}
       <p>Date: {formatDate(order.createdAt)}</p>
       <p>Customer: {customer?.name ?? "Walk-in Customer"}</p>
       <p>Payment: {order.paymentMethod}</p>

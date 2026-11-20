@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ImagePlus, Loader2 } from "lucide-react";
@@ -44,7 +44,7 @@ export function ProductForm({
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     setValue,
     formState: { errors },
   } = useForm<ProductFormValues>({
@@ -53,8 +53,8 @@ export function ProductForm({
       ? { ...initial }
       : { sku: "", barcode: "", name: "", description: "", categoryId: "", purchasePrice: 0, sellingPrice: 0, stock: 0, minStock: 5, imageUrl: "" },
   });
-  const imageUrl = watch("imageUrl");
-  const name = watch("name");
+  const imageUrl = useWatch({ control, name: "imageUrl" });
+  const name = useWatch({ control, name: "name" });
 
   async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];

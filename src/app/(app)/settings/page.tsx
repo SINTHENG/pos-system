@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -42,11 +42,11 @@ export default function SettingsPage() {
   const [logo, setLogo] = useState(settings.logoUrl);
   const [tab, setTab] = useState<"store" | "receipt" | "password">("store");
 
-  const { register, handleSubmit, watch, formState: { errors, isDirty } } = useForm<V>({
+  const { register, handleSubmit, control, formState: { errors, isDirty } } = useForm<V>({
     resolver: zodResolver(schema),
     defaultValues: { ...settings },
   });
-  const live = watch();
+  const live = useWatch({ control });
 
   async function onLogo(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];

@@ -64,12 +64,34 @@ export async function PUT(req: Request, { params }: Ctx) {
       return NextResponse.json(existing);
     }
 
-    const { data: updated, error } = await supabase
+    const updateData: Record<string, unknown> = { ...data };
+    delete updateData.sequenceNumber;
+
+    let { data: updated, error } = await supabase
       .from(table)
-      .update(data)
+      .update(updateData)
       .eq("id", id)
       .select()
       .maybeSingle();
+
+    let retries = 0;
+    while (error && retries < 4 && (error.message.includes("does not exist") || error.code === "42703")) {
+      retries++;
+      const match = error.message.match(/column "([^"]+)" of relation/i);
+      if (match && match[1] && match[1] in updateData) {
+        delete updateData[match[1]];
+        const retryResult = await supabase
+          .from(table)
+          .update(updateData)
+          .eq("id", id)
+          .select()
+          .maybeSingle();
+        updated = retryResult.data;
+        error = retryResult.error;
+      } else {
+        break;
+      }
+    }
 
     if (error) {
       return NextResponse.json({ message: error.message }, { status: 500 });

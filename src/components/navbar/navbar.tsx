@@ -39,7 +39,7 @@ export function Navbar() {
         />
       </form>
 
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-2 sm:gap-3">
         <div className="relative">
           <button
             onClick={() => {
