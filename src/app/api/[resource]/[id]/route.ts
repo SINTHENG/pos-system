@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { RESOURCES, getTableName } from "@/lib/server-resources";
+import { RESOURCES, extractMissingColumn, getTableName } from "@/lib/server-resources";
 import { getSupabaseServerClient } from "@/lib/supabase";
 
 type Ctx = { params: Promise<{ resource: string; id: string }> };
@@ -75,11 +75,18 @@ export async function PUT(req: Request, { params }: Ctx) {
       .maybeSingle();
 
     let retries = 0;
-    while (error && retries < 4 && (error.message.includes("does not exist") || error.code === "42703")) {
+    while (
+      error &&
+      retries < 6 &&
+      (error.message.includes("does not exist") ||
+        error.message.includes("schema cache") ||
+        error.code === "42703" ||
+        error.code === "PGRST204")
+    ) {
       retries++;
-      const match = error.message.match(/column "([^"]+)" of relation/i);
-      if (match && match[1] && match[1] in updateData) {
-        delete updateData[match[1]];
+      const missingCol = extractMissingColumn(error.message);
+      if (missingCol && missingCol in updateData) {
+        delete updateData[missingCol];
         const retryResult = await supabase
           .from(table)
           .update(updateData)

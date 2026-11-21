@@ -73,7 +73,28 @@ export async function ensureResourceSeeded(resource: string) {
         return row;
       });
 
-      const { error: insertError } = await supabase.from(table).insert(normalizedSeed);
+      let seedRows = [...normalizedSeed];
+      let { error: insertError } = await supabase.from(table).insert(seedRows);
+      let seedRetries = 0;
+      while (
+        insertError &&
+        seedRetries < 6 &&
+        (insertError.message.includes("schema cache") || insertError.message.includes("does not exist"))
+      ) {
+        seedRetries++;
+        const missing = extractMissingColumn(insertError.message);
+        if (missing) {
+          seedRows = seedRows.map((r) => {
+            const copy = { ...r };
+            delete copy[missing];
+            return copy;
+          });
+          const retryRes = await supabase.from(table).insert(seedRows);
+          insertError = retryRes.error;
+        } else {
+          break;
+        }
+      }
       if (insertError) {
         console.warn(`Could not seed table "${table}":`, insertError.message);
       }
@@ -88,4 +109,17 @@ export async function ensureResourceSeeded(resource: string) {
 export function clean<T extends Record<string, unknown>>(doc: T | null): T | null {
   if (!doc) return doc;
   return doc;
+}
+
+/** Extracts missing column name from PostgREST or PostgreSQL schema error messages */
+export function extractMissingColumn(errorMessage: string): string | null {
+  // PostgREST: Could not find the 'cashierName' column of 'orders' in the schema cache
+  const postgrestMatch = errorMessage.match(/Could not find the '([^']+)' column/i);
+  if (postgrestMatch) return postgrestMatch[1];
+
+  // Postgres: column "cashierName" of relation "orders" does not exist
+  const postgresMatch = errorMessage.match(/column ["']([^"']+)["'] of relation/i);
+  if (postgresMatch) return postgresMatch[1];
+
+  return null;
 }
