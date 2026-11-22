@@ -48,39 +48,39 @@ export function Sidebar() {
           sidebarCollapsed ? "lg:w-[72px]" : "lg:w-64"
         )}
       >
-        {/* Header */}
+        {/* Header with Clickable Shop Icon to Toggle Sidebar */}
         <div
           className={cn(
             "flex h-16 shrink-0 items-center border-b border-border/60 transition-all",
             sidebarCollapsed ? "justify-center px-2" : "justify-between px-5"
           )}
         >
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2.5 font-semibold text-foreground overflow-hidden"
-            title="Modern POS"
+          {/* Clicking the Shop Icon toggles the sidebar */}
+          <button
+            type="button"
+            onClick={toggleCollapse}
+            className="flex items-center gap-2.5 font-semibold text-foreground overflow-hidden text-left group cursor-pointer"
+            title={
+              sidebarCollapsed
+                ? "Click shop icon to open sidebar (⌘B)"
+                : "Click shop icon to collapse sidebar (⌘B)"
+            }
+            aria-label={sidebarCollapsed ? "Open sidebar" : "Collapse sidebar"}
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-xs">
+            <span
+              className={cn(
+                "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-xs transition-all duration-200 group-hover:scale-105 active:scale-95 group-hover:ring-2 group-hover:ring-primary/30",
+                sidebarCollapsed && "ring-2 ring-primary/20"
+              )}
+            >
               <Store size={18} />
             </span>
             {!sidebarCollapsed && (
-              <span className="font-bold tracking-tight text-base whitespace-nowrap">
+              <span className="font-bold tracking-tight text-base whitespace-nowrap group-hover:text-primary transition-colors">
                 Modern POS
               </span>
             )}
-          </Link>
-
-          {/* Header Toggle Button on Desktop */}
-          {!sidebarCollapsed && (
-            <button
-              onClick={toggleCollapse}
-              className="hidden lg:flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-gray-100 hover:text-foreground transition"
-              title="Collapse sidebar (⌘B)"
-              aria-label="Collapse sidebar"
-            >
-              <ChevronLeft size={16} />
-            </button>
-          )}
+          </button>
 
           {/* Close Button on Mobile Drawer */}
           <button

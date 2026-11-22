@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Bell, LogOut, Menu, Search, UserRound } from "lucide-react";
+import { Bell, LogOut, Search, Store, UserRound } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/auth-store";
 import { useUiStore } from "@/store/ui-store";
@@ -25,13 +25,14 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-border bg-card/90 px-4 backdrop-blur lg:px-6">
+      {/* Mobile Shop Icon button to open sidebar (Burger menu deleted) */}
       <button
         onClick={toggleSidebar}
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-muted hover:bg-gray-100 hover:text-foreground transition"
-        aria-label="Toggle sidebar"
-        title="Toggle sidebar (⌘B)"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-xs lg:hidden hover:opacity-90 transition cursor-pointer"
+        aria-label="Open sidebar"
+        title="Open sidebar"
       >
-        <Menu size={20} />
+        <Store size={18} />
       </button>
 
       <form onSubmit={onSearch} className="relative max-w-md flex-1">
