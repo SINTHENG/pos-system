@@ -25,8 +25,13 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-border bg-card/90 px-4 backdrop-blur lg:px-6">
-      <button className="lg:hidden" onClick={toggleSidebar} aria-label="Open menu">
-        <Menu size={22} />
+      <button
+        onClick={toggleSidebar}
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-muted hover:bg-gray-100 hover:text-foreground transition"
+        aria-label="Toggle sidebar"
+        title="Toggle sidebar (⌘B)"
+      >
+        <Menu size={20} />
       </button>
 
       <form onSubmit={onSearch} className="relative max-w-md flex-1">
