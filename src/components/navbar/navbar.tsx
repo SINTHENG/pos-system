@@ -2,19 +2,24 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Bell, LogOut, Search, Store, UserRound } from "lucide-react";
+import { Bell, LogOut, Moon, Search, Store, Sun, UserRound } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/auth-store";
 import { useUiStore } from "@/store/ui-store";
+import { useThemeStore } from "@/store/theme-store";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { mockProducts } from "@/lib/mock-data";
 
 export function Navbar() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const toggleSidebar = useUiStore((s) => s.toggleSidebar);
+  const { theme, toggleTheme } = useThemeStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [query, setQuery] = useState("");
+
+  const isDark = theme === "dark";
 
   const lowStock = mockProducts.filter((p) => p.stock <= p.minStock);
 
@@ -45,14 +50,17 @@ export function Navbar() {
         />
       </form>
 
-      <div className="ml-auto flex items-center gap-2 sm:gap-3">
+      <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+        {/* Night / Light Mode Toggle Button */}
+        <ThemeToggle />
+
         <div className="relative">
           <button
             onClick={() => {
               setNotifOpen((v) => !v);
               setMenuOpen(false);
             }}
-            className="relative rounded-xl p-2 hover:bg-gray-100"
+            className="relative rounded-xl p-2 hover:bg-gray-100 dark:hover:bg-slate-800"
             aria-label="Notifications"
           >
             <Bell size={20} />
@@ -67,7 +75,7 @@ export function Navbar() {
               <p className="mb-2 text-sm font-semibold">Low stock alerts</p>
               <ul className="max-h-64 space-y-1 overflow-y-auto text-sm">
                 {lowStock.map((p) => (
-                  <li key={p.id} className="flex justify-between rounded-lg px-2 py-1.5 hover:bg-gray-50">
+                  <li key={p.id} className="flex justify-between rounded-lg px-2 py-1.5 hover:bg-gray-50 dark:hover:bg-slate-800">
                     <span>{p.name}</span>
                     <span className="text-red-500">{p.stock} left</span>
                   </li>
@@ -83,7 +91,7 @@ export function Navbar() {
               setMenuOpen((v) => !v);
               setNotifOpen(false);
             }}
-            className="flex items-center gap-2 rounded-xl p-1.5 hover:bg-gray-100"
+            className="flex items-center gap-2 rounded-xl p-1.5 hover:bg-gray-100 dark:hover:bg-slate-800"
           >
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
               {user?.name.charAt(0)}
@@ -100,9 +108,22 @@ export function Navbar() {
                   setMenuOpen(false);
                   router.push("/profile");
                 }}
-                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-gray-50"
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-slate-800"
               >
                 <UserRound size={16} /> Profile
+              </button>
+              <button
+                onClick={() => {
+                  toggleTheme();
+                }}
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-slate-800"
+              >
+                {isDark ? (
+                  <Sun size={16} className="text-amber-400" />
+                ) : (
+                  <Moon size={16} />
+                )}
+                <span>{isDark ? "Light mode" : "Night mode"}</span>
               </button>
               <button
                 onClick={() => {
@@ -110,7 +131,7 @@ export function Navbar() {
                   toast.success("Signed out");
                   router.replace("/login");
                 }}
-                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
               >
                 <LogOut size={16} /> Sign out
               </button>
